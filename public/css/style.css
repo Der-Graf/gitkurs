@@ -1,0 +1,48 @@
+body {
+    background-color:#ffffff;
+    padding:20px;
+}
+
+main {
+    margin-top:20px;
+}
+
+.error {
+    color:#ff0000;
+}
+
+.wrapper {
+    background-color:#bbbbbb;
+    width:800px;
+    padding:20px;
+    margin:10px auto 0 auto;
+}
+
+.kurs {
+    width:100%;
+    padding:20px;
+    background-color:#eeeeee;
+    margin:10px 0;
+}
+
+.row {
+    margin:5px 0;
+}
+
+label {
+    display:inline-block;
+    width:200px;
+}
+
+textarea {
+    width:300px;
+    height:150px;
+}
+
+footer {
+    background-color:#333333;
+    color:#ffffff;
+    width:800px;
+    margin:0px auto;
+    padding:20px;
+}
