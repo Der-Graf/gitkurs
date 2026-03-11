@@ -1,22 +1,23 @@
 <?php
 
-namespace App\Models;
+namespace App\Models; 
+use Illuminate\Database\Eloquent\Model; 
+use Illuminate\Database\Eloquent\Factories\HasFactory; 
 
-use Illuminate\Database\Eloquent\Model;
-
-class Task extends Model
+class Task extends Model 
 {
-   protected function casts(): array
-    {
+    use HasFactory; 
+    protected function casts(): array 
+    { 
         return [
-            'due_date' => 'date',   // Notwendig für $tasks->due_date->format('d.m.Y'); // da ansonsten ein String
-        ];
+             'due_date' => 'date',
+             ]; 
     }
-
     // Relation
-    // tasks->user
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
+    // tasks->user 
+    
+    public function users() 
+    { 
+        return $this->belongsToMany(User::class); 
+        } 
 }

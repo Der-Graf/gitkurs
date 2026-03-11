@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Task;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -10,14 +11,27 @@ class TaskController extends Controller
 {
     public function index()
     {
-        //$tasks = Task::where('user_id',Auth::id())->orderBy('due_date')->paginate(10); 
-        $tasks = Auth::user()->tasks()->paginate(10);
+        $tasks = Task::where('user_id',Auth::id())->orderBy('due_date')->paginate(10); 
+        if(request()->has('suche'))
+        {
+            $suche = request()->suche;
+            $tasks = Task::where('title','LIKE',"%$suche%")->paginate(10);
+        }
+        else
+            {
+                $tasks=Task::paginate(10);
+            }
+        
+
+        //$tasks = Auth::user()->tasks()->paginate(10);
+        //$tasks = Task::paginate(10);
         return view('tasks.index', ['tasks' => $tasks]);
     }
 
     public function create()
     {
-        return view('tasks.create',['task'=>new Task]);
+
+        return view('tasks.create',['task'=>new Task,'users'=>User::get()]);
     }
 
     public function store(Request $request)
@@ -25,29 +39,39 @@ class TaskController extends Controller
         $this->validation($request);
         
         $task = new Task();
-        $task->user_id  = Auth::id();  //user()    // auth()->user()->id;
         $task->title    = $request->input('title'); 
         $task->status   = $request->input('status');
         $task->due_date = $request->input('due_date');
         $task->notes    = $request->input('notes'); 
         $task->save(); // Auth::user()->tasks()->create(['title' => $request('title'), ...]);
 
+        //In Zwischentabelle schreiben
+        $task->users()->attach($request->input('users'));
+
         return redirect('/tasks')->with('success', 'Task wurde erstellt.');
     }
 
     public function show(Task $task) // //model binding
     {             
-                return view('tasks.show', ['task'=>$task]);
+                //$users=USER::get();
+                $users = $task->users;  // NUr ausgewählte User in $users laden
+                //$id = $task->id;        // Explicitly pass $id if used in the view
+                return view('tasks.show', ['task'=>$task],['users'=>$users]);
        
     }
 
     public function edit(Task $task)
     {
-        return view('tasks.edit', compact('task'));
+        // Gate::authorize('task-entry',$task);
+        $users = User::get();
+        return view('tasks.edit', compact('task','users'));
     }
 
     public function update(Request $request, Task $task)
     {
+        // Gate::authorize('task-entry',$task);
+
+
         /*
         $request->validate([
             'title' => ['required', 'string', 'min:3', 'max:120'],
@@ -64,6 +88,8 @@ class TaskController extends Controller
         $task->notes    = $request->input('notes'); 
         $task->save();
 
+        $task->users()->sync($request->input('users'));
+
         return redirect("/tasks/$task->id")->with('success', 'Task wurde aktualisiert.');
     }
 
@@ -78,6 +104,7 @@ class TaskController extends Controller
         $request->validate([
             'title' => ['required', 'string', 'min:3', 'max:120'],
             'status' => ['required', 'in:open,done'],
+            'users' => ['required', 'array'],
             'due_date' => ['nullable', 'date'],
             'notes' => ['nullable', 'string', 'max:1000'],
         ]);

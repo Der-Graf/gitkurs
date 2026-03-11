@@ -8,7 +8,9 @@
                 <th>Titel</th>
                 <th>Status</th>
                 <th>Fällig</th>
+                <th>User</th>
                 <th>Aktionen</th>
+                
             </tr>
         </thead>
         <tbody>
@@ -21,6 +23,7 @@
                     @else
                     -
                     @endisset</td>
+                <td>{{ $task->users->pluck('name')->join(', ') }}</td>
                 <td style="white-space:nowrap;">
                     <a href="/tasks/{{$task->id}}">Show</a> |
                     <a href="/tasks/{{$task->id}}/edit">Edit</a> |

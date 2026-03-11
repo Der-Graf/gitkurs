@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(User::class)->constrained()->onDelete('cascade');  // Macht ein Feld user_id
+          //$table->foreignIdFor(User::class)->constrained()->onDelete('cascade');  // Macht ein Feld user_id
             $table->string('title',255);
             $table->string('status',4);
             // $table->enum('status',['open','done']);
@@ -22,6 +22,9 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->timestamps();
         });
+
+        
+
     }
 
     /**
