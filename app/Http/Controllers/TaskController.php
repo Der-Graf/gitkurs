@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use App\Models\User;
+use App\Notifications\PushToTask;
+use App\Notifications\RemoveFromTask;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -48,6 +50,14 @@ class TaskController extends Controller
         //In Zwischentabelle schreiben
         $task->users()->attach($request->input('users'));
 
+        //Benachrichtung an alle zugewiesenen User senden
+        //vom input wird nur die ID der User übergeben (sh. create.blade.php)
+        foreach($request->input('users') as $userId)
+        {
+            $user = User::find($userId);            //Alternative: where('id',$userId)->get();
+            $user->notify(new PushToTask($task));
+        }
+
         return redirect('/tasks')->with('success', 'Task wurde erstellt.');
     }
 
@@ -88,7 +98,22 @@ class TaskController extends Controller
         $task->notes    = $request->input('notes'); 
         $task->save();
 
-        $task->users()->sync($request->input('users'));
+        $users = $task->users()->sync($request->input('users'));
+
+        //Benachrichtung nur an neu zugewiesenen Use senden
+        //Definition dieses user Bereiches in der vorangegangenen Zeile
+        foreach($users['attached'] as $userId)
+        {
+            $user = User::find($userId);            //Alternative: where('id',$userId)->get();
+            $user->notify(new PushToTask($task));
+        }
+
+        //Benachrichtung an alle abgewählten User senden
+        foreach($users['detached'] as $userId)
+        {
+            $user = User::find($userId);            //Alternative: where('id',$userId)->get();
+            $user->notify(new RemoveFromTask($task));
+        }
 
         return redirect("/tasks/$task->id")->with('success', 'Task wurde aktualisiert.');
     }

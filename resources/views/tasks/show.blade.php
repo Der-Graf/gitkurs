@@ -21,5 +21,4 @@
         <a href="/tasks">Zur Liste</a> |
         <a href="/tasks/{{ $task->id }}/edit">Bearbeiten</a>
     </p>
-    
 </x-layout>

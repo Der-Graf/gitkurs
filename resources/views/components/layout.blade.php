@@ -25,6 +25,24 @@
         </nav>
     </header>
 
+    @auth
+        <div style="width:50%; margin:10px auto; padding:10px; background-color:aqua;">
+            <h2 style="font-size:12px;">Benachrichtigungen</h2>
+            @if(auth()->user()->unreadNotifications->count()>0)
+            <ul>
+                @foreach(auth()->user()->unreadNotifications as $notification)
+                <li>
+                    <a href="{{ $notification->data['url'] }}">{{ $notification->data['message'] }}: {{ $notification->data['title'] }}</a>
+                </li>
+                @endforeach
+            </ul>
+            <a href="/notifications/mark-as-read" class="btn btn-sm btn-secondary">Alle als gelesen markieren</a>
+            @else
+            <p><em>Keine neuen Benachrichtigungen</em></p>
+            @endif
+        </div>
+    @endauth
+
     <main style="max-width:900px; margin:0 auto; padding:16px;">
         @if(session('success'))
             <div style="padding:10px; border:1px solid #b8e0c0; background:#e9f7ee; margin-bottom:16px;">

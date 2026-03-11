@@ -24,6 +24,10 @@ Route::middleware('auth')->group(function(){
     Route::delete('/tasks/{task}',[TaskController::class,'destroy']);
     // Logout
     Route::get('/logout',[SessionController::class,'destroy']);
+    Route::get('/notifications/mark-as-read', function(){
+        Auth::user()->unreadNotifications->markAsRead();
+        return redirect()->back();
+    });
 });
 
 Route::middleware('guest')->group(function(){
