@@ -13,6 +13,7 @@
         <nav style="display:flex; gap:12px; align-items:center;">
             <a href="/tasks">Tasks</a>
             <a href="/tasks/create">Neu</a>
+            @auth<a href="/users">Benutzer</a>@endauth
             @guest
                <a href="/register" class="btn btn-primary">Registrieren</a>
                <a href="/login" class="btn btn-primary">Login</a>

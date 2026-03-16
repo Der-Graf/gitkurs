@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\SessionController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\Test\DBTestController;
+use App\Http\Controllers\UserController;
 use App\Models\Task;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 Route::view('/', 'welcome');
 
 // Route::resource('tasks', TaskController::class);             // Alternative zu den 7 Einzelroutes
+
 
 Route::middleware('auth')->group(function(){
     // Resource tasks
@@ -26,9 +28,13 @@ Route::middleware('auth')->group(function(){
     Route::get('/logout',[SessionController::class,'destroy']);
     Route::get('/notifications/mark-as-read', function(){
         Auth::user()->unreadNotifications->markAsRead();
-        return redirect()->back();
-    });
+        return redirect()->back(); });
+
+    //Bildupload
+    Route::get('/users',[UserController::class,'index']);
+    Route::post('/users/{id}/upload', [UserController::class, 'upload'])->name('users.upload');
 });
+
 
 Route::middleware('guest')->group(function(){
     // Auth
@@ -38,6 +44,7 @@ Route::middleware('guest')->group(function(){
     Route::get('/login',[SessionController::class,'create'])->name('login');
     Route::post('/login',[SessionController::class,'store']); 
 });
+
 
 // Zu Testzwecken
 Route::get("/dbtest",[DBTestController::class,'test']);
